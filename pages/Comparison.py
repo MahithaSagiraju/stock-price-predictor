@@ -1,9 +1,9 @@
 import streamlit as st
-import yfinance as yf
-import pandas as pd
 import plotly.graph_objects as go
 
-st.set_page_config(layout="wide")
+from data_utils import download_stock_data
+
+st.set_page_config(page_icon="📊", layout="wide")
 
 st.title("📊 Multi Stock Comparison")
 
@@ -25,15 +25,19 @@ stocks = st.multiselect(
 
 fig = go.Figure()
 
+failed = []
+
 for stock in stocks:
 
-    data = yf.download(
+    data = download_stock_data(
         stock,
-        period="1y"
+        period="1y",
+        show_error=False,
     )
 
-    if isinstance(data.columns, pd.MultiIndex):
-        data.columns = data.columns.get_level_values(0)
+    if data is None:
+        failed.append(stock)
+        continue
 
     fig.add_trace(go.Scatter(
         x=data.index,
@@ -41,9 +45,18 @@ for stock in stocks:
         name=stock
     ))
 
+if failed:
+    st.warning(
+        "Could not load data for: " + ", ".join(failed)
+        + ". Yahoo Finance may be rate limiting requests; try again shortly."
+    )
+
+if not stocks:
+    st.info("Select at least one stock to compare.")
+
 fig.update_layout(
     template="plotly_dark",
     height=700
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")

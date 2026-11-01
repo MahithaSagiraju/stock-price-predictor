@@ -2,6 +2,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="AI Stock Predictor",
+    page_icon="📈",
     layout="wide"
 )
 
@@ -39,4 +40,4 @@ st.markdown(
     """
 )
 
-st.image("assets/stock-graph.svg", use_container_width=True)
+st.image("assets/stock-graph.svg", width="stretch")

@@ -1,9 +1,9 @@
 import streamlit as st
-import yfinance as yf
-import pandas as pd
 import plotly.graph_objects as go
 
-st.set_page_config(layout="wide")
+from data_utils import download_stock_data
+
+st.set_page_config(page_icon="📊", layout="wide")
 
 st.title("📊 Stock Dashboard")
 
@@ -12,10 +12,10 @@ stock = st.sidebar.text_input(
     "AAPL"
 )
 
-data = yf.download(stock, period="1y")
+data = download_stock_data(stock, period="1y")
 
-if isinstance(data.columns, pd.MultiIndex):
-    data.columns = data.columns.get_level_values(0)
+if data is None:
+    st.stop()
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -57,7 +57,7 @@ fig.update_layout(
     height=600
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 st.subheader("📋 Latest Data")
 

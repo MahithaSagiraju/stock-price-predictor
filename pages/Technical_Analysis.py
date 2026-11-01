@@ -1,9 +1,9 @@
 import streamlit as st
-import yfinance as yf
-import pandas as pd
 import plotly.graph_objects as go
 
-st.set_page_config(layout="wide")
+from data_utils import download_stock_data
+
+st.set_page_config(page_icon="📈", layout="wide")
 
 st.title("📈 Technical Analysis")
 
@@ -12,10 +12,10 @@ stock = st.sidebar.text_input(
     "AAPL"
 )
 
-data = yf.download(stock, period="2y")
+data = download_stock_data(stock, period="2y")
 
-if isinstance(data.columns, pd.MultiIndex):
-    data.columns = data.columns.get_level_values(0)
+if data is None:
+    st.stop()
 
 # Candlestick
 st.subheader("📊 Candlestick Chart")
@@ -36,7 +36,7 @@ fig.update_layout(
     xaxis_rangeslider_visible=False
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # RSI
 st.subheader("📉 RSI Indicator")
@@ -69,7 +69,7 @@ fig_rsi.update_layout(
     height=400
 )
 
-st.plotly_chart(fig_rsi, use_container_width=True)
+st.plotly_chart(fig_rsi, width="stretch")
 
 # MACD
 st.subheader("📈 MACD Indicator")
@@ -99,7 +99,7 @@ fig_macd.update_layout(
     height=400
 )
 
-st.plotly_chart(fig_macd, use_container_width=True)
+st.plotly_chart(fig_macd, width="stretch")
 
 # Bollinger Bands
 st.subheader("📊 Bollinger Bands")
@@ -135,4 +135,4 @@ fig_bb.update_layout(
     height=500
 )
 
-st.plotly_chart(fig_bb, use_container_width=True)
+st.plotly_chart(fig_bb, width="stretch")

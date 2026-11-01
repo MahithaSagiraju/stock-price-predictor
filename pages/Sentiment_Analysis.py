@@ -1,7 +1,7 @@
 import streamlit as st
 from textblob import TextBlob
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_icon="📰", layout="wide")
 
 st.title("📰 Sentiment Analysis")
 
