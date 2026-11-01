@@ -7,16 +7,16 @@ from pathlib import Path
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error
-from tensorflow.keras.models import load_model
 
 from data_utils import download_stock_data
+from lstm_model import NumpyStockModel
 
-MODEL_PATH = Path(__file__).resolve().parent.parent / "stock_prediction_model.keras"
+MODEL_PATH = Path(__file__).resolve().parent.parent / "stock_prediction_model_weights.npz"
 
 
 @st.cache_resource(show_spinner="Loading AI model...")
 def load_stock_model():
-    return load_model(MODEL_PATH)
+    return NumpyStockModel(MODEL_PATH)
 
 
 st.set_page_config(page_icon="🤖", layout="wide")
@@ -52,7 +52,14 @@ scaler = MinMaxScaler(feature_range=(0,1))
 
 data_train_scale = scaler.fit_transform(data_train)
 
-model = load_stock_model()
+try:
+    model = load_stock_model()
+except FileNotFoundError:
+    st.error(
+        "The trained model weights (`stock_prediction_model_weights.npz`) are "
+        "missing from the repository, so predictions are unavailable."
+    )
+    st.stop()
 
 past_100_days = data_train.tail(100)
 
